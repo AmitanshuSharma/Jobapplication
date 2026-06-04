@@ -72,8 +72,7 @@ def test_429_is_retried(mock_post, mock_sleep):
 def test_sends_json_payload_in_body(mock_post, mock_sleep):
     mock_post.return_value = _make_response(200)
     post("https://example.com/api", json_payload={"limit": 20, "offset": 0}, max_retries=1, rate_limit_delay=0)
-    _, kwargs = mock_post.call_args
-    assert kwargs.get("json") == {"limit": 20, "offset": 0}
+    assert mock_post.call_args.kwargs.get("json") == {"limit": 20, "offset": 0}
 
 
 @patch("src.crawlers.workday_http.time.sleep")
@@ -117,3 +116,12 @@ def test_backoff_capped_at_16s(mock_post, mock_sleep):
         post("https://example.com/api", max_retries=7, rate_limit_delay=0)
     sleep_calls = [call.args[0] for call in mock_sleep.call_args_list]
     assert all(s <= 16 for s in sleep_calls)
+
+
+@patch("src.crawlers.workday_http.time.sleep")
+@patch("src.crawlers.workday_http.requests.post")
+def test_zero_retries_raises_without_making_request(mock_post, mock_sleep):
+    """max_retries=0 raises immediately without making any HTTP request."""
+    with pytest.raises(CrawlerFetchError):
+        post("https://example.com/api", max_retries=0, rate_limit_delay=0)
+    mock_post.assert_not_called()

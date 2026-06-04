@@ -38,7 +38,7 @@ def post(
         json_payload: Dict serialised as JSON request body.
         headers: Optional HTTP headers dict.
         timeout: Request timeout in seconds.
-        max_retries: Total number of attempts before raising.
+        max_retries: Total number of attempts. Must be >= 1.
         rate_limit_delay: Seconds to sleep before every attempt.
 
     Returns:
