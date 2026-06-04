@@ -38,10 +38,12 @@ def render_page(url: str, timeout_ms: int = 30000) -> str:
     try:
         with sync_playwright() as pw:
             browser = pw.chromium.launch(headless=True)
-            page = browser.new_page()
-            page.goto(url, timeout=timeout_ms, wait_until="networkidle")
-            html = page.content()
-            browser.close()
+            try:
+                page = browser.new_page()
+                page.goto(url, timeout=timeout_ms, wait_until="networkidle")
+                html = page.content()
+            finally:
+                browser.close()
             return html
     except PlaywrightTimeout as exc:
         raise CrawlerFetchError(f"Playwright timeout loading {url}: {exc}", url=url)
