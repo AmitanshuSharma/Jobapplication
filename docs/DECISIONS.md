@@ -534,3 +534,27 @@ Backoff:
 Other HTTP failures are not retried.
 
 ---
+
+## Greenhouse Description Handling
+
+Greenhouse HTML content is converted to plain text using:
+
+BeautifulSoup(...).get_text(separator=" ", strip=True)
+
+before storage.
+
+Rationale:
+The scoring engine operates on normalized text rather than HTML.
+
+---
+
+## Greenhouse Company Attribution
+
+The Greenhouse API does not include the owning company name.
+
+fetch() injects an internal metadata field which parse() maps into the JobDict company field.
+
+Rationale:
+Maintain a deterministic parser while supporting multiple board tokens.
+
+---

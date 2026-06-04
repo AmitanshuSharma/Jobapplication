@@ -1,0 +1,42 @@
+[
+  {
+    "id": "a1b2c3d4-0001-0001-0001-000000000001",
+    "text": "Senior Data Engineer",
+    "hostedUrl": "https://jobs.lever.co/acme/a1b2c3d4-0001-0001-0001-000000000001",
+    "applyUrl": "https://jobs.lever.co/acme/a1b2c3d4-0001-0001-0001-000000000001/apply",
+    "createdAt": 1748476800000,
+    "categories": {
+      "location": "Gurugram, India",
+      "team": "Data Engineering",
+      "department": "Engineering",
+      "commitment": "Full-time"
+    },
+    "content": {
+      "description": "Senior Data Engineer with PySpark and Databricks experience. 5+ years required.",
+      "descriptionHtml": "<p>Senior Data Engineer with <strong>PySpark</strong> and <em>Databricks</em> experience.</p><ul><li>5+ years required</li></ul>",
+      "body": "<div><p>Senior Data Engineer with PySpark and Databricks experience.</p></div>",
+      "lists": []
+    },
+    "tags": ["data", "engineering"]
+  },
+  {
+    "id": "a1b2c3d4-0002-0002-0002-000000000002",
+    "text": "Analytics Engineer",
+    "hostedUrl": "https://jobs.lever.co/acme/a1b2c3d4-0002-0002-0002-000000000002",
+    "applyUrl": "https://jobs.lever.co/acme/a1b2c3d4-0002-0002-0002-000000000002/apply",
+    "createdAt": 1748390400000,
+    "categories": {
+      "location": "Remote",
+      "team": "Analytics",
+      "department": "Engineering",
+      "commitment": "Full-time"
+    },
+    "content": {
+      "description": "Analytics Engineer with dbt and Snowflake.",
+      "descriptionHtml": "<p>Analytics Engineer with dbt and Snowflake.</p>",
+      "body": "<p>Analytics Engineer with dbt and Snowflake.</p>",
+      "lists": []
+    },
+    "tags": ["analytics"]
+  }
+]
