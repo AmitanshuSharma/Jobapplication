@@ -1,0 +1,21 @@
+{
+  "jobPostings": [
+    {
+      "title": "Senior Data Engineer",
+      "externalPath": "/job/Senior-Data-Engineer_JR100001",
+      "locationsText": "Gurugram, India",
+      "postedOn": "Posted 2 Days Ago",
+      "bulletFields": ["JR100001"],
+      "jobReqId": "JR100001"
+    },
+    {
+      "title": "Lead Data Engineer",
+      "externalPath": "/job/Lead-Data-Engineer_JR100002",
+      "locationsText": "Noida, India",
+      "postedOn": "Posted 5 Days Ago",
+      "bulletFields": ["JR100002"],
+      "jobReqId": "JR100002"
+    }
+  ],
+  "total": 2
+}
