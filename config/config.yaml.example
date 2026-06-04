@@ -1,0 +1,132 @@
+# config.yaml.example
+# Copy this file to config/config.yaml and fill in your values.
+# Do not commit config/config.yaml — it is gitignored.
+# All keys listed here are required. See docs/CONFIG.md for descriptions.
+
+# --- Paths ---
+database_path: data/jobs.db
+
+# --- Scheduling ---
+schedule_interval_minutes: 60
+
+# --- Logging ---
+log_level: INFO          # Accepted: DEBUG, INFO, WARNING, ERROR
+log_directory: logs
+
+# --- HTTP / Crawler ---
+request_timeout_seconds: 30
+max_retries: 3
+retry_backoff_seconds: 2
+user_agent: JobIntelligencePlatform/1.0
+
+# --- Notification ---
+notification_threshold: 20
+
+# --- Scoring weights ---
+role_mismatch_penalty: -50
+remote_location_bonus: 5
+company_tier_1_bonus: 8
+company_tier_2_bonus: 5
+
+# --- Accepted locations ---
+accepted_locations:
+  - Gurugram
+  - Gurgaon
+  - Noida
+  - Pune
+  - Hyderabad
+  - Remote
+  - India Remote
+  - Hybrid
+
+# --- Accepted role keywords ---
+accepted_role_keywords:
+  - Senior Data Engineer
+  - Lead Data Engineer
+  - Staff Data Engineer
+  - Data Platform Engineer
+  - Data Engineering Lead
+  - Big Data Engineer
+  - Principal Data Engineer
+  - Analytics Engineer
+  - Senior Analytics Engineer
+
+# --- Positive keywords (keyword: score weight) ---
+positive_keywords:
+  Databricks: 10
+  PySpark: 10
+  Platform Engineering: 10
+  Spark: 8
+  Kafka: 8
+  Streaming: 8
+  Distributed Systems: 8
+  CDC pipelines: 7
+  Delta Lake: 7
+  Lakehouse: 7
+  DBT: 6
+  Snowflake: 6
+  Azure: 6
+  AWS: 6
+  BigQuery: 5
+  Airflow: 5
+  Scala: 4
+  Python: 4
+  SQL: 3
+
+# --- Negative keywords (keyword: score penalty) ---
+negative_keywords:
+  Presales: -15
+  Support: -12
+  Solution Architect: -10
+  Delivery Manager: -10
+  Project Manager: -10
+  Client Partner: -10
+  Business Analyst: -8
+  Engagement Lead: -8
+  Transformation Consultant: -8
+  PowerBI: -5
+  Tableau: -5
+  Talend: -5
+  Ab Initio: -5
+  SSIS: -5
+  Informatica PowerCenter: -5
+
+# --- Company tiers ---
+# Tier 1: Product and engineering-focused companies (bonus: +8)
+company_tier_1:
+  - Atlassian
+  - Adobe
+  - ServiceNow
+  - Walmart Global Tech
+  - Target
+  - Expedia Group
+  - PayPal
+  - Salesforce
+  - Intuit
+  - Uber
+  - Microsoft
+  - SAP
+  - Databricks
+
+# Tier 2: Analytics ecosystem companies (bonus: +5)
+company_tier_2:
+  - Tiger Analytics
+  - Tredence
+  - Fractal Analytics
+  - LatentView Analytics
+
+# --- Sources ---
+# Greenhouse: map of display name to board token
+# Example: atlassian: atlassian
+greenhouse_board_tokens:
+  company-name: board-token-here
+
+# Lever: list of company slug identifiers
+# Example: - stripe
+lever_company_ids:
+  - company-name-here
+
+# Workday: list of career page URLs
+# Example: - https://atlassian.wd5.myworkdayjobs.com/en-US/Atlassian
+workday_urls:
+  - https://company.wd5.myworkdayjobs.com/careers

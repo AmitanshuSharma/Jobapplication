@@ -1,0 +1,9 @@
+pyyaml
+python-dotenv
+requests
+playwright
+beautifulsoup4
+streamlit
+pandas
+openpyxl
+schedule

@@ -1,0 +1,28 @@
+{
+  "jobs": [
+    {
+      "id": 4037389005,
+      "title": "Senior Data Engineer",
+      "updated_at": "2026-05-28T10:00:00-05:00",
+      "requisition_id": "DE-2026-001",
+      "location": { "name": "Gurugram, India" },
+      "departments": [{ "id": 4001, "name": "Engineering" }],
+      "offices":    [{ "id": 5001, "name": "India - Gurugram" }],
+      "absolute_url": "https://boards.greenhouse.io/acme/jobs/4037389005",
+      "content": "<p>Senior Data Engineer with <strong>PySpark</strong> and <em>Databricks</em> experience.</p><ul><li>5+ years required</li></ul>",
+      "metadata": []
+    },
+    {
+      "id": 4037389006,
+      "title": "Analytics Engineer",
+      "updated_at": "2026-05-27T08:00:00-05:00",
+      "requisition_id": "AE-2026-002",
+      "location": { "name": "Remote" },
+      "departments": [{ "id": 4001, "name": "Engineering" }],
+      "offices": [],
+      "absolute_url": "https://boards.greenhouse.io/acme/jobs/4037389006",
+      "content": "<p>Analytics Engineer with dbt and Snowflake.</p>",
+      "metadata": []
+    }
+  ]
+}
