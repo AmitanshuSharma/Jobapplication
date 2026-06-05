@@ -210,8 +210,8 @@ class WorkdayCrawler(BaseCrawler):
                         f"CXS response is not valid JSON: {exc}", url=cxs_url
                     ) from exc
                 logger.warning(
-                    "WorkdayCrawler: CXS page at offset %d has invalid JSON for %s — returning %d jobs so far",
-                    offset, cxs_url, len(all_jobs),
+                    "WorkdayCrawler: CXS page at offset %d has invalid JSON for %s (%s) — returning %d jobs so far",
+                    offset, cxs_url, exc, len(all_jobs),
                 )
                 break
 
@@ -242,6 +242,8 @@ class WorkdayCrawler(BaseCrawler):
                 break
 
             all_jobs.extend(page_jobs)
+            if not page_jobs:
+                break
             first_page = False
 
             total = data.get("total", 0)
@@ -382,10 +384,12 @@ class WorkdayCrawler(BaseCrawler):
         job_links = soup.find_all("a", attrs={"data-automation-id": "jobPostingTitleLink"})
 
         if not job_links:
-            raise CrawlerParseError(
-                f"WorkdayCrawler: no job listings found in HTML for {configured_url} "
-                f"— selector data-automation-id='jobPostingTitleLink' matched 0 elements"
+            logger.warning(
+                "WorkdayCrawler: no job listings found in HTML for %s "
+                "— selector data-automation-id='jobPostingTitleLink' matched 0 elements",
+                configured_url,
             )
+            return []
 
         results = []
         for link in job_links:
@@ -421,7 +425,7 @@ class WorkdayCrawler(BaseCrawler):
             source_url = href
         else:
             parsed_base = urlparse(configured_url)
-            source_url = f"{parsed_base.scheme}://{parsed_base.hostname}{href}"
+            source_url = f"{parsed_base.scheme}://{parsed_base.netloc}{href}"
 
         container = link_tag.find_parent("li") or link_tag.find_parent("div")
 

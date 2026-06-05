@@ -289,15 +289,57 @@ def test_parse_malformed_cxs_record_does_not_fail_batch():
     assert "Analytics Engineer" in titles
 
 
-def test_parse_raises_parse_error_when_html_has_no_job_links():
+def test_parse_returns_empty_when_html_has_no_job_links():
+    """An HTML page with no job listings yields an empty result, not an error."""
     raw = [{
         "_strategy": "html",
         "_company_name": "TestCo",
         "_configured_url": "https://testco.wd5.myworkdayjobs.com/en-US/TestCo",
         "html": "<html><body><p>No jobs found.</p></body></html>",
     }]
-    with pytest.raises(CrawlerParseError):
-        WorkdayCrawler(_BASE_CONFIG).parse(raw)
+    result = WorkdayCrawler(_BASE_CONFIG).parse(raw)
+    assert result == []
+
+
+def test_parse_empty_html_for_one_company_does_not_discard_other_results():
+    """A company with no HTML job links must not discard results from other companies."""
+    fixture = _load_cxs_fixture()
+    raw = [
+        {
+            "_strategy": "json",
+            "_company_name": "GoodCo",
+            "_configured_url": "https://goodco.wd5.myworkdayjobs.com/en-US/GoodCo",
+            "job_postings": fixture["jobPostings"],
+        },
+        {
+            "_strategy": "html",
+            "_company_name": "EmptyCo",
+            "_configured_url": "https://emptyco.wd5.myworkdayjobs.com/en-US/EmptyCo",
+            "html": "<html><body><p>No jobs.</p></body></html>",
+        },
+    ]
+    result = WorkdayCrawler(_BASE_CONFIG).parse(raw)
+    assert len(result) == 2
+    assert all(j["company"] == "GoodCo" for j in result)
+
+
+@patch("src.crawlers.workday.workday_http.post")
+def test_fetch_cxs_stops_when_page_returns_empty_job_list(mock_post):
+    """Pagination must stop when API returns an empty jobPostings list before total is reached."""
+    page1 = {
+        "jobPostings": [
+            {"title": "Job 0", "externalPath": "/job/J0", "jobReqId": "JR0"}
+        ],
+        "total": 100,
+    }
+    page2 = {
+        "jobPostings": [],
+        "total": 100,
+    }
+    mock_post.side_effect = [_mock_post_response(page1), _mock_post_response(page2)]
+    result = WorkdayCrawler(_BASE_CONFIG).fetch()
+    assert mock_post.call_count == 2
+    assert len(result[0]["job_postings"]) == 1
 
 
 # ---------------------------------------------------------------------------
