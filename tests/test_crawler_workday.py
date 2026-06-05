@@ -471,6 +471,18 @@ def test_fetch_cxs_raises_when_job_postings_key_missing(mock_post):
         )
 
 
+@patch("src.crawlers.workday.workday_http.post")
+def test_fetch_cxs_returns_empty_list_when_first_page_is_empty(mock_post):
+    """An empty first page returns [] in a single request — valid data, not an error."""
+    mock_post.return_value = _mock_post_response({"jobPostings": [], "total": 0})
+    crawler = WorkdayCrawler(_BASE_CONFIG)
+    jobs = crawler._fetch_cxs(
+        "https://testco.wd5.myworkdayjobs.com/wday/cxs/testco/TestCo/jobs"
+    )
+    assert jobs == []
+    assert mock_post.call_count == 1
+
+
 # ---------------------------------------------------------------------------
 # run() — integration tests
 # ---------------------------------------------------------------------------

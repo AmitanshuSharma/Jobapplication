@@ -248,7 +248,13 @@ class WorkdayCrawler(BaseCrawler):
 
             # Cache total from the first successful page; later pages may omit it
             if total is None:
-                total = data.get("total", 0)
+                total = data.get("total")  # None if key absent; pagination relies on empty-page guard
+                if total is None:
+                    logger.warning(
+                        "WorkdayCrawler: CXS response missing 'total' key for %s "
+                        "— relying on empty-page guard to terminate pagination",
+                        cxs_url,
+                    )
 
             # Must remain after all first-page validation; the error handlers above depend on it
             first_page = False
