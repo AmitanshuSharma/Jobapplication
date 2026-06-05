@@ -325,21 +325,19 @@ def test_parse_empty_html_for_one_company_does_not_discard_other_results():
 
 @patch("src.crawlers.workday.workday_http.post")
 def test_fetch_cxs_stops_when_page_returns_empty_job_list(mock_post):
-    """Pagination must stop when API returns an empty jobPostings list before total is reached."""
+    """Pagination stops when API returns empty jobPostings before offset reaches total."""
     page1 = {
-        "jobPostings": [
-            {"title": "Job 0", "externalPath": "/job/J0", "jobReqId": "JR0"}
-        ],
+        "jobPostings": [{"title": "Job 0", "externalPath": "/job/J0", "jobReqId": "JR0"}],
         "total": 100,
     }
-    page2 = {
-        "jobPostings": [],
-        "total": 100,
-    }
+    page2 = {"jobPostings": [], "total": 100}
     mock_post.side_effect = [_mock_post_response(page1), _mock_post_response(page2)]
-    result = WorkdayCrawler(_BASE_CONFIG).fetch()
+    crawler = WorkdayCrawler(_BASE_CONFIG)
+    jobs = crawler._fetch_cxs(
+        "https://testco.wd5.myworkdayjobs.com/wday/cxs/testco/TestCo/jobs"
+    )
     assert mock_post.call_count == 2
-    assert len(result[0]["job_postings"]) == 1
+    assert len(jobs) == 1
 
 
 # ---------------------------------------------------------------------------

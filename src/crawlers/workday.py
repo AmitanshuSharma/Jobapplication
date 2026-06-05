@@ -171,6 +171,7 @@ class WorkdayCrawler(BaseCrawler):
         all_jobs: list[dict] = []
         offset = 0
         first_page = True
+        total: int | None = None  # Cached from first page; never overwritten by later pages
 
         while True:
             payload = {
@@ -244,11 +245,16 @@ class WorkdayCrawler(BaseCrawler):
             all_jobs.extend(page_jobs)
             if not page_jobs:
                 break
+
+            # Cache total from the first successful page; later pages may omit it
+            if total is None:
+                total = data.get("total", 0)
+
+            # Must remain after all first-page validation; the error handlers above depend on it
             first_page = False
 
-            total = data.get("total", 0)
             offset += _CXS_LIMIT
-            if offset >= total:
+            if total is not None and offset >= total:
                 break
 
         return all_jobs
