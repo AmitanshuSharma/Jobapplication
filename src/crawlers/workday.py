@@ -205,23 +205,41 @@ class WorkdayCrawler(BaseCrawler):
             try:
                 data = response.json()
             except Exception as exc:
-                raise CrawlerFetchError(
-                    f"CXS response is not valid JSON: {exc}", url=cxs_url
-                ) from exc
+                if first_page:
+                    raise CrawlerFetchError(
+                        f"CXS response is not valid JSON: {exc}", url=cxs_url
+                    ) from exc
+                logger.warning(
+                    "WorkdayCrawler: CXS page at offset %d has invalid JSON for %s — returning %d jobs so far",
+                    offset, cxs_url, len(all_jobs),
+                )
+                break
 
             if not isinstance(data, dict) or "jobPostings" not in data:
-                raise CrawlerFetchError(
-                    f"CXS response missing 'jobPostings' key — got: "
-                    f"{list(data.keys()) if isinstance(data, dict) else type(data).__name__}",
-                    url=cxs_url,
+                if first_page:
+                    raise CrawlerFetchError(
+                        f"CXS response missing 'jobPostings' key — got: "
+                        f"{list(data.keys()) if isinstance(data, dict) else type(data).__name__}",
+                        url=cxs_url,
+                    )
+                logger.warning(
+                    "WorkdayCrawler: CXS page at offset %d missing 'jobPostings' for %s — returning %d jobs so far",
+                    offset, cxs_url, len(all_jobs),
                 )
+                break
 
             page_jobs = data["jobPostings"]
             if not isinstance(page_jobs, list):
-                raise CrawlerFetchError(
-                    f"CXS 'jobPostings' is not a list — got {type(page_jobs).__name__}",
-                    url=cxs_url,
+                if first_page:
+                    raise CrawlerFetchError(
+                        f"CXS 'jobPostings' is not a list — got {type(page_jobs).__name__}",
+                        url=cxs_url,
+                    )
+                logger.warning(
+                    "WorkdayCrawler: CXS 'jobPostings' is not a list at offset %d for %s — returning %d jobs so far",
+                    offset, cxs_url, len(all_jobs),
                 )
+                break
 
             all_jobs.extend(page_jobs)
             first_page = False
@@ -360,11 +378,6 @@ class WorkdayCrawler(BaseCrawler):
 
         Raises CrawlerParseError if no job link elements are found (structural failure).
         """
-        if not html:
-            raise CrawlerParseError(
-                f"WorkdayCrawler: empty HTML from Playwright for {configured_url}"
-            )
-
         soup = BeautifulSoup(html, "html.parser")
         job_links = soup.find_all("a", attrs={"data-automation-id": "jobPostingTitleLink"})
 

@@ -210,6 +210,20 @@ def test_parse_one_html_returns_none_for_missing_href():
     assert crawler._parse_one_html(link, "TestCo", "https://testco.wd5.myworkdayjobs.com/en-US/TestCo") is None
 
 
+def test_parse_one_html_source_url_preserved_when_href_is_absolute():
+    from bs4 import BeautifulSoup
+    crawler = WorkdayCrawler(_BASE_CONFIG)
+    soup = BeautifulSoup(
+        '<li><a data-automation-id="jobPostingTitleLink" '
+        'href="https://testco.wd5.myworkdayjobs.com/en-US/TestCo/job/DE_JR001">Data Engineer</a></li>',
+        "html.parser",
+    )
+    link = soup.find("a")
+    job = crawler._parse_one_html(link, "TestCo", "https://testco.wd5.myworkdayjobs.com/en-US/TestCo")
+    assert job is not None
+    assert job["source_url"] == "https://testco.wd5.myworkdayjobs.com/en-US/TestCo/job/DE_JR001"
+
+
 # ---------------------------------------------------------------------------
 # parse() — unit tests (uses pre-built raw items, no HTTP)
 # ---------------------------------------------------------------------------
@@ -356,10 +370,11 @@ def test_fetch_one_failed_url_does_not_stop_others(mock_post):
     with patch(
         "src.crawlers.workday.playwright_utils.render_page",
         side_effect=CrawlerFetchError("pw fail"),
-    ):
+    ) as mock_render:
         mock_post.side_effect = _side_effect
         result = WorkdayCrawler(config).fetch()
 
+    mock_render.assert_called_once()
     assert len(result) == 1
     assert result[0]["_company_name"] == "GoodCo"
 
