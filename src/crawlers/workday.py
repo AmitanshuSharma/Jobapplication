@@ -390,7 +390,7 @@ class WorkdayCrawler(BaseCrawler):
 
         Observed on: atlassian.wd5, adobe.wd5 (verified 2024).
 
-        Raises CrawlerParseError if no job link elements are found (structural failure).
+        If no job link elements are found, logs a warning and returns [].
         """
         soup = BeautifulSoup(html, "html.parser")
         job_links = soup.find_all("a", attrs={"data-automation-id": "jobPostingTitleLink"})
