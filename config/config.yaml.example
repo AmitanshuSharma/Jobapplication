@@ -126,7 +126,12 @@ greenhouse_board_tokens:
 lever_company_ids:
   - company-name-here
 
-# Workday: list of career page URLs
-# Example: - https://atlassian.wd5.myworkdayjobs.com/en-US/Atlassian
+# Workday: map of display name to career page URL.
+# Display name is used as the 'company' field in job records.
+# Primary extraction: Workday CXS JSON API (no browser required).
+# Fallback:          Playwright HTML rendering if CXS is blocked.
+# Examples:
+#   Atlassian: https://atlassian.wd5.myworkdayjobs.com/en-US/Atlassian
+#   Adobe: https://adobe.wd5.myworkdayjobs.com/en-US/external
 workday_urls:
-  - https://company.wd5.myworkdayjobs.com/careers
+  Company Name: https://company.wd5.myworkdayjobs.com/en-US/CareerSiteName
