@@ -10,6 +10,8 @@ Ownership rules enforced here:
 - No notification logic.
 - Repository exceptions propagate without suppression.
 """
+from __future__ import annotations
+
 import hashlib
 import json
 import logging
@@ -22,7 +24,7 @@ from src.utils.normalizer import normalize_location
 logger = logging.getLogger(__name__)
 
 
-def _compute_dedup_hash(company: str, title: str, location_normalized: "str | None") -> str:
+def _compute_dedup_hash(company: str, title: str, location_normalized: str | None) -> str:
     """SHA-256 of normalised company+title+location. Owned by ingest, not repository."""
     raw = (
         company.lower().strip()
@@ -32,7 +34,7 @@ def _compute_dedup_hash(company: str, title: str, location_normalized: "str | No
     return hashlib.sha256(raw.encode()).hexdigest()
 
 
-def ingest_jobs(jobs: list[dict], config: dict, conn: "sqlite3.Connection") -> dict:
+def ingest_jobs(jobs: list[dict], config: dict, conn: sqlite3.Connection) -> dict:
     """Ingest a list of job dicts, dedup, score, and persist via the repository.
 
     Args:

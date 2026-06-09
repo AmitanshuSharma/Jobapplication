@@ -323,3 +323,47 @@ def test_boundary_repository_no_scoring_import():
 def test_boundary_ingest_no_notifications_import():
     imports = _get_imports("src/pipeline/ingest.py")
     assert not any("notifications" in m or "crawlers" in m or "streamlit" in m for m in imports)
+
+
+# ---------------------------------------------------------------------------
+# Integration test — real SQLite DB, no mocks
+# ---------------------------------------------------------------------------
+
+def test_integration_valid_job_inserted_to_real_db():
+    """Insert a real record and read it back to verify the field contract."""
+    from src.db.connection import get_connection
+    from src.db.migrations import run_migrations
+    import tempfile, os
+
+    with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
+        db_path = f.name
+    try:
+        run_migrations(db_path)
+        conn = get_connection(db_path)
+        job = _make_job()
+        config = _make_config(
+            positive_keywords={"PySpark": 10},
+            negative_keywords={},
+            accepted_role_keywords=["Data Engineer"],
+            notification_threshold=20,
+            remote_location_bonus=5,
+            company_tier_1=[],
+            company_tier_2=[],
+            role_mismatch_penalty=-50,
+            company_tier_1_bonus=8,
+            company_tier_2_bonus=5,
+        )
+        summary = ingest_jobs([job], config, conn)
+        assert summary["inserted"] == 1
+
+        row = conn.execute("SELECT * FROM jobs WHERE source_url = ?", (job["source_url"],)).fetchone()
+        assert row is not None
+        assert row["title"] == job["title"]
+        assert row["company"] == job["company"]
+        assert row["score"] is not None
+        assert row["status"] == "Pending"
+        assert row["notified"] == 0
+        assert row["location_ineligible"] == 0
+        conn.close()
+    finally:
+        os.unlink(db_path)
