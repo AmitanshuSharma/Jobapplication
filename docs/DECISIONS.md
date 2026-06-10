@@ -558,3 +558,82 @@ Rationale:
 Maintain a deterministic parser while supporting multiple board tokens.
 
 ---
+## Workday Strategy
+
+Primary:
+- CXS JSON API
+
+Fallback:
+- Playwright-rendered HTML
+
+Rationale:
+Prefer stable API access while preserving compatibility with tenants that require rendering.
+
+---
+
+## Workday HTTP Client
+
+Workday uses a dedicated POST transport layer:
+
+src/crawlers/workday_http.py
+
+Generic crawler HTTP logic remains isolated from Workday-specific behaviour.
+
+---
+
+## Workday Failure Policy
+
+Per-company isolation.
+
+If one Workday tenant fails:
+
+- log warning
+- preserve previously fetched jobs
+- continue remaining tenants
+---
+## Notification Ownership
+
+The ingestion pipeline never sends notifications.
+
+The pipeline only sets:
+
+- score
+- passed_threshold
+- notified = 0
+- location_ineligible
+
+Notification eligibility is determined later by the dispatcher layer.
+
+Rationale:
+Keep persistence and notification concerns separated.
+
+---
+## AgGrid Table Component
+
+AgGrid (streamlit-aggrid 1.2.1) is the primary table component for all job views.
+
+Rationale:
+- Built-in row selection via response["selected_rows"] — no Streamlit version constraint.
+- Built-in per-column filtering — reduces custom filter code.
+- Click-to-sort column headers — no pre-sort logic in views.
+- Compact row height improves information density.
+
+---
+## app.py Migration Import
+
+app.py imports db.migrations.run_migrations directly at startup.
+
+Rationale:
+Schema initialization is a startup concern, not a data-access concern. The rule
+"only data_loader.py imports from db/" governs data reads and writes. Calling
+run_migrations once at startup is a narrow, justified exception. No SQL is
+executed directly in app.py — only the migration function is called.
+
+---
+## referral_status_editor Component
+
+referral_status_editor.py is a write component permitted to import
+db.referrals_repository directly, following the same pattern as referral_form.py.
+
+Rationale: Consistent with the write-component boundary grant already established
+for status_editor, tag_editor, and referral_form.
